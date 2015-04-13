@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<title>WebAudio Suspend/Resume</title>
+<style type="text/css">
+header {
+    margin: 20px 0;
+}
+#results {
+    white-space: pre;
+    font-family: monospace;
+}
+</style>
+</head>
+<body>
+<header>Commands</header>
+<div>
+<button id="add-oscillator">Add Oscillator</button>
+<button id="suspend">Suspend</button>
+<button id="resume">Resume</button>
+</div>
+<header>Results</header>
+<div id="results"></div>
+<script type="text/javascript">
+
+function run() {
+    var audioContext;
+    try {
+        audioContext = new AudioContext();
+    } catch (e) {
+        log('Unprefixed AudioContext not found');
+        return;
+    }
+
+    var nextOscillatorId = 0;
+    document.querySelector('#add-oscillator').addEventListener('click', function() {
+        var oscillatorId = nextOscillatorId++;
+        log('added oscillator: ' + oscillatorId);
+        var oscillator = audioContext.createOscillator();
+        oscillator.connect(audioContext.destination);
+        oscillator.start(0);
+    });
+
+    var nextSuspendId = 0;
+    document.querySelector('#suspend').addEventListener('click', function() {
+        var suspendId = nextSuspendId++;
+        log('suspend request: ' + suspendId);
+        audioContext.suspend()
+        .then(function() {
+            log('suspend resolved: ' + suspendId);
+        })
+        .catch(function() {
+            log('suspend rejected: ' + suspendId);
+        });
+    });
+
+    var nextResumeId = 0;
+    document.querySelector('#resume').addEventListener('click', function() {
+        var resumeId = nextResumeId++;
+        log('resume request: ' + resumeId);
+        audioContext.resume()
+        .then(function() {
+            log('resume resolved: ' + resumeId);
+        })
+        .catch(function() {
+            log('resume rejected: ' + resumeId);
+        });
+    });
+}
+
+function log(message) {
+    console.log(message);
+    var results = document.querySelector('#results');
+    results.textContent += message + '\n';
+}
+
+run();
+
+</script>
+</body>
+</html>
