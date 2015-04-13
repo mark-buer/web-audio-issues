@@ -32,6 +32,11 @@ function run() {
         return;
     }
 
+    if (!audioContext.suspend || !audioContext.resume) {
+        log('AudioContext lacks suspend/resume support');
+        return;
+    }
+
     var nextOscillatorId = 0;
     document.querySelector('#add-oscillator').addEventListener('click', function() {
         var oscillatorId = nextOscillatorId++;
